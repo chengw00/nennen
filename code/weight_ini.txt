@@ -1,0 +1,1 @@
+../input/atec4_oper/weight_ini.txt

@@ -1,0 +1,59 @@
+! Input and output files (with relative path from the "code" directory):
+&file_names
+pred_file = '../input/atec4_oper/veri.150602.000000.cdf'  ! FORECAST INPUT FILE
+obs_file =  '../input/atec4_oper/veri.150602.000000.cdf'  ! OBS INPUT FILE (can be same as above)
+!out_file_ascii = '../output/xcel/ascii/stn'  ! ASCII OUTPUT FILE, only needed if write_ascii = 1
+out_file_netcdf = '../output/atec4_oper/netcdf/an_en_output.nc'  ! NETCDF OUTPUT FILE, only needed if write_netcdf = 1
+/
+
+
+! Inputs for observation of variable to be predicted (target variable)
+&target_variable
+target_var = 'temp_o'  ! TARGET VARIABLE NAME IN INPUT NETCDF FILE
+lower_limit_target_var = '-70'  ! TARGET VAR LOWER LIMIT
+upper_limit_target_var = '50'  ! TARGET VAR UPPER LIMIT
+target_var_unit = 'C'  ! UNIT OF TARGET VARIABLE PUT IN THE OUTPUT NETCDF FILE
+/
+
+! Inputs for analog predictors
+&analog_pred
+analog_predictors = 'temp_m wspd_m wdir_m q2_m pres_m'  ! PREDICTOR NAMES IN INPUT NETCDF FILE
+lower_limits = '        -70      0      0    0    900'  ! PREDICTOR LOWER LIMITS
+upper_limits = '         50    100    360   30   1100'  ! PREDICTOR UPPER LIMITS
+is_circular = '           0      0      1    0      0'  ! PREDICTOR CIRCULARITY FLAG
+/
+
+! Analog code input parameters
+&anen_parameters
+nday_start = -480    ! START DAY FOR ANEN CALCULATIONS; NEGATIVE VALUE MEANS DAYS TO GO BACK,
+                     ! -1 FOR LATEST DAY, -2 FOR THE MOST RECENT 2 DAYS, ETC; CANNOT GO BACK PAST
+                     ! SECOND DAY, PLEASE KEEP THIS IN MIND
+num_lead_times = 24  ! NUMBER OF LEAD TIMES CONSIDERED FOR ANEN CALCULATIONS
+num_analogs = 20     ! NUMBER OF ANALOGS; LAST MEMBER: BEST
+hour_start = 0       ! HOURS FROM THE FORECAST INITIALIZATION TIME CORRESPONING TO THE FIRST
+                     ! LEAD TIME IN THE NETCDF FILE
+forecast_freq = 1    ! DATA FREQUENCY (1 OR 3 OR 6 HOURS GENERALLY)
+                     ! (FOR SUB-HOURLY, USE FRACTION, FOR EXAMPLE, 0.25 FOR 15 MIN)
+point_lead = 2       ! DIMENSION ORDER OF LEAD TIMES AS SEEN IN THE INPUT NETCDF FILE
+point_stat = 3       ! DIMENSION ORDER OF STATIONS AS SEEN IN THE INPUT NETCDF FILE
+point_days = 1       ! DIMENSION ORDER OF  DAYS AS SEEN IN THE INPUT NETCDF FILE
+write_ascii = 0      ! ASCII OUTPUT (1 = TRUE, 0 = FALSE)
+write_netcdf = 1     ! NETCDF OUTPUT (1 = TRUE, 0 = FALSE)
+find_weights = 0     ! OPTIMAL ANALOG PREDICTORS WEIGHTS COMPUTATION (1 = TRUE, 0 = FALSE);
+                     !THE METRIC IS CALCULATED FROM NDAY_START TO THE LAST DAY IN THE INPUT FILE
+opt_metric_endday = 845  ! LAST (DAY) IN THE TIME SERIES TO USE FOR OPTIMIZATION (INTEGER)
+window = 0           ! SEARCH ANALOGS AT THE SAME HOUR AS THE CURRENT FORECAST HOUR,
+                     ! AND +/- window (INTEGER, IN UNITS OF FREQUENCY OF DATA, E.G., HOURLY, 3-HOURLY, ETC.)
+trend = 1            ! trend = "t tilde" IN EQ. (2) IN DELLE MONACHE ET AL. 2013, MWR, 41, 3498-3516
+                     ! (INTEGER, IN UNITS OF FREQUENCY OF DATA, E.G., HOURLY, 3-HOURLY, ETC.)
+method = 1           ! 1 = AnEn, ANALOG ENSEMBLE AS IN DELLE MONACHE ET AL. 2013, MWR, 41, 3498-3516
+                     ! LAST MEMBER: BEST MEMBER
+                     ! 2 = KFAS, KALMAN FILTER ON ANALOG SPACE IDENTIFIED AS "ANKF"
+                     !     IN DELLE MONACHE ET AL. 2011, MWR,  139, 3554-3570
+                     ! 3 = KFAN; KF APPLIED TO AnEnMEAN, AS IN DJALALOVA ET AL. 2015, AE, 108, 76-87
+                     !     AnEn WILL ALSO BE RUN AND OUTPUT AS WELL
+                     ! 4 = AnEnMEAN, WEIGHTED MEAN OF AnEn, IDENTIFIED AS "AN" IN DELLE MONACHE ET AL.
+                     !     2011, MWR,  139, 3554-3570. AnEn WILL ALSO BE RUN AND OUTPUT AS WELL
+atec_file_format = 1 ! 0=NOT ATEC FILE FORMAT; 1=ATEC FILE FORMAT
+bias_cor = 1         ! 0 = no bias correction for AnEn; 1 = bias correction for AnEn based on relationship between forecast and obs
+/
